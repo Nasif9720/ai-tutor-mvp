@@ -1,34 +1,29 @@
 # crew.py
-from dotenv import load_dotenv
+
 from crewai import Crew
-from agents import receiver_agent, tutor_agent
-from tasks import upload_content, student_question
+from agents import receiver_agent, tutor_agent, question_agent, feedback_agent
+from tasks import upload_content, student_question, generate_question_task, evaluate_answer_task
 
+upload_crew = Crew(
+    agents=[receiver_agent],
+    tasks=[upload_content],
+    verbose=True
+)
 
-def main():
-    # Load .env so API key is available
-    load_dotenv()
+tutor_crew = Crew(
+    agents=[tutor_agent],
+    tasks=[student_question],
+    verbose=True
+)
 
-    crew = Crew(
-        agents=[receiver_agent, tutor_agent],
-        tasks=[upload_content, student_question],
-        verbose=True
-    )
+question_crew = Crew(
+    agents=[question_agent],
+    tasks=[generate_question_task],
+    verbose=True
+)
 
-    mode = input("Choose mode [upload/ask]: ").strip().lower()
-    if mode == "upload":
-        path = input("Enter path to file (PDF/CSV/XLSX/ZIP/dir): ").strip()
-        result = crew.kickoff(inputs={"file_path": path})
-        print(result)
-
-    elif mode == "ask":
-        q = input("Enter your question: ").strip()
-        result = crew.kickoff(inputs={"student_question": q})
-        print(result)
-
-    else:
-        print("Invalid option. Please choose 'upload' or 'ask'.")
-
-
-if __name__ == "__main__":
-    main()
+feedback_crew = Crew(
+    agents=[feedback_agent],
+    tasks=[evaluate_answer_task],
+    verbose=True
+)
