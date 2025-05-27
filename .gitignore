@@ -1,0 +1,20 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environments
+venv/
+
+# Ignore dotenv files
+.env
+
+# Ignore SQLite DBs and other local databases
+*.sqlite3
+
+# Ignore OS/Editor files
+.DS_Store
+*.log
+
+# Ignore Streamlit config and temp files
+.streamlit/
+.temp/
