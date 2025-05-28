@@ -6,6 +6,8 @@ import shutil
 from dotenv import load_dotenv
 from crewai_tools import RagTool
 from langchain_openai import ChatOpenAI
+from db.db import get_feedback_by_student
+
 
 # Load environment variables
 load_dotenv()
@@ -144,3 +146,32 @@ Only return a valid JSON list. Do not include explanations or anything else.
         return []
     except Exception:
         return []
+
+
+def generate_mentor_guidance(student_id: str) -> str:
+    history = get_feedback_by_student(student_id)
+    if not history:
+        return "I have no assessment history for you. Please complete a challenge first."
+    # Build a context block
+    ctx = []
+    for q, cq, ans, fb, score, ts in history:
+        ctx.append(f"- Topic: {q}\n"
+                   f"  Question: {cq}\n"
+                   f"  Your Answer: {ans}\n"
+                   f"  Feedback: {fb}\n"
+                   f"  Score: {score}/10\n")
+    context = "\n".join(ctx)
+    prompt = f"""
+You are a mentor. Here is the student's assessment history:
+{context}
+
+Based on this, please provide:
+1. Key topics the student should review more deeply.
+2. Next steps and resources for learning.
+3. Study tips tailored to their performance.
+"""
+    chat = llm.chat([
+        {"role": "system", "content": "You are a helpful educational mentor."},
+        {"role": "user",   "content": prompt}
+    ])
+    return chat.choices[0].message.content

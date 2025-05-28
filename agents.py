@@ -43,3 +43,17 @@ feedback_agent = Agent(
     llm=llm,
     verbose=True
 )
+
+# Mentor Agent
+# This agent reviews past assessments and feedback to create personalized study guidance
+mentor_agent = Agent(
+    role="Mentor Agent",
+    goal="Create personalized study guidance from past assessment history",
+    backstory=(
+        "You are a seasoned educational mentor who reviews a student's "
+        "past challenge questions and feedback to craft a tailored study plan."
+    ),
+    tools=[],    # no tools needed; you use llm directly
+    llm=llm,
+    verbose=True
+)

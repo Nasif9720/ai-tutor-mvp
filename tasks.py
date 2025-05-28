@@ -1,7 +1,7 @@
 # tasks.py
 from crewai import Task
-from agents import receiver_agent, tutor_agent, question_agent, feedback_agent
-from tools import ingest_file, generate_answer, generate_quiz_from_context, retrieve_docs, get_flat_context
+from agents import receiver_agent, tutor_agent, question_agent, feedback_agent, mentor_agent
+from tools import ingest_file, generate_answer, generate_quiz_from_context, retrieve_docs, get_flat_context, generate_mentor_guidance
 
 upload_content = Task(
     description=(
@@ -47,4 +47,14 @@ evaluate_answer_task = Task(
     "Provide a score out of 10 for the {student_answer}.",
     agent=feedback_agent,
     async_execution=False,
+)
+
+
+mentor_task = Task(
+    description="Provide personalized study guidance for student `{student_id}` based on their past assessment history.",
+    expected_output="A structured roadmap with review topics, next steps, and study tips.",
+    agent=mentor_agent,
+    async_execution=False,
+    output_function=lambda inputs: generate_mentor_guidance(
+        inputs["student_id"])
 )
